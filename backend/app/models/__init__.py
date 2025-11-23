@@ -1,0 +1,1 @@
+"""Package untuk model data (ORM/struktur tabel)."""
