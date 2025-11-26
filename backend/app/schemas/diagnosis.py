@@ -1,10 +1,11 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class DiagnosisRequest(BaseModel):
-    features: Dict[str, float]
+    # Terima nilai string dari frontend; mesin fuzzy akan menormalkan.
+    features: Dict[str, Any]
 
 
 class SimilarCase(BaseModel):
@@ -14,10 +15,15 @@ class SimilarCase(BaseModel):
 
 
 class DiagnosisResult(BaseModel):
+    id: Optional[int] = None
+    created_at: Optional[datetime] = None
     risk_value: float
     risk_category: str
     recommendation: Optional[str] = None
-    similar_cases: List[SimilarCase] = []
+    similar_cases: List[SimilarCase] = Field(default_factory=list)
+
+    class Config:
+        orm_mode = True
 
 
 class DiagnosisHistoryItem(BaseModel):

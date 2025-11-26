@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from app.db.session import get_db
 from app.schemas.diagnosis import DiagnosisRequest, DiagnosisResult, SimilarCase
@@ -25,12 +27,15 @@ def diagnose(payload: DiagnosisRequest, db: Session = Depends(get_db)):
         risk_value=risk_value,
         risk_category=risk_category,
         recommendation=rec,
+        created_at=datetime.now(ZoneInfo("Asia/Jakarta")),
     )
     db.add(diag)
     db.commit()
     db.refresh(diag)
 
     return DiagnosisResult(
+        id=diag.id,
+        created_at=diag.created_at,
         risk_value=risk_value,
         risk_category=risk_category,
         recommendation=rec,

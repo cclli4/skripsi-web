@@ -30,6 +30,8 @@ const riskThemes = {
 const riskSequence = ["Rendah", "Sedang", "Tinggi"];
 
 const dummyDiagnosisResult = {
+  id: 0,
+  created_at: "2024-05-01T10:00:00.000Z",
   risk_category: "Sedang",
   risk_value: 0.64,
   recommendation:
@@ -43,6 +45,17 @@ const dummyDiagnosisResult = {
   })),
 };
 
+const normalizeRisk = (value) => {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) {
+    return { percent: null, display: "-" };
+  }
+  const num = Number(value);
+  const normalized = Math.abs(num) > 1 ? num : num * 100;
+  const clamped = Math.min(Math.max(normalized, 0), 100);
+  const decimals = clamped >= 100 ? 0 : clamped >= 10 ? 1 : 2;
+  return { percent: clamped, display: `${clamped.toFixed(decimals)}%` };
+};
+
 export default function HasilSection({ hasil }) {
   const hasRealResult = Boolean(hasil);
   const displayResult = hasRealResult ? hasil : dummyDiagnosisResult;
@@ -50,8 +63,7 @@ export default function HasilSection({ hasil }) {
   const themeKey = categoryKey in riskThemes ? categoryKey : "default";
   const theme = riskThemes[themeKey] ?? riskThemes.default;
   const badgeBg = theme.badgeBackground ?? `${theme.color ?? "#4D172B"}1a`;
-  const riskValue = typeof displayResult?.risk_value === "number" ? displayResult.risk_value : null;
-  const riskPercent = riskValue !== null ? Math.min(Math.max(riskValue, 0), 1) * 100 : null;
+  const { percent: riskPercent, display: riskDisplay } = normalizeRisk(displayResult?.risk_value);
   const detailItems = Array.isArray(displayResult?.detail) && displayResult.detail.length > 0
     ? displayResult.detail
     : dummyDiagnosisResult.detail;
@@ -59,20 +71,32 @@ export default function HasilSection({ hasil }) {
     Array.isArray(displayResult?.similar_cases) && displayResult.similar_cases.length > 0
       ? displayResult.similar_cases
       : dummyDiagnosisResult.similar_cases;
+  const createdAt = displayResult?.created_at ? new Date(displayResult.created_at) : null;
+  const formattedDate = createdAt && !Number.isNaN(createdAt.getTime())
+    ? createdAt.toLocaleString("id-ID", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Asia/Jakarta",
+      })
+    : null;
 
   return (
     <section id="hasil" className="section-full" style={{ scrollMarginTop: 80 }}>
       <div className="section-content hasil-section">
         <header className="hasil-header">
           <div>
-              {hasRealResult}
             <h2>Hasil Analisis</h2>
             <p className="hasil-header__copy">
               Tingkat risiko dihitung dari kombinasi gejala yang Anda pilih. Gunakan informasi ini untuk
               mengambil keputusan lanjutan yang tepat.
             </p>
+            {formattedDate && (
+              <p className="hasil-meta">
+                #{displayResult?.id ?? "—"} • Dihitung pada{" "}
+                <time dateTime={displayResult.created_at}>{formattedDate}</time>
+              </p>
+            )}
           </div>
-          {!hasRealResult}
         </header>
 
         <article
@@ -89,7 +113,7 @@ export default function HasilSection({ hasil }) {
             <span className="hasil-card__badge">
               {theme.label}
             </span>
-            <h3>{riskValue !== null ? riskValue.toFixed(3) : displayResult.risk_value ?? "-"}</h3>
+          <h3>{riskDisplay}</h3>
           </header>
           {riskPercent !== null && (
             <div className="hasil-card__progress">

@@ -44,7 +44,14 @@ export default function SinglePage() {
     setError("");
     try {
       const result = await postDiagnosis(featureValues);
-      setHasil(result);
+      const detail = diagnosisFields.map((field) => ({
+        key: field.key,
+        label: field.label,
+        helper: field.helper,
+        example: featureValues[field.key],
+        risk: result.risk_category,
+      }));
+      setHasil({ ...result, detail });
       const data = await fetchHistory();
       setRiwayat(data.items || []);
       const el = document.getElementById("hasil");

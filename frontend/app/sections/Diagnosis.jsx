@@ -40,11 +40,7 @@ function DiagnosisSelect({ field, value, onChange }) {
   };
 
   return (
-    <div
-      className={`custom-select ${open ? "custom-select--open" : ""}`}
-      ref={containerRef}
-      onMouseLeave={() => setOpen(false)}
-    >
+    <div className={`custom-select ${open ? "custom-select--open" : ""}`} ref={containerRef}>
       <button
         type="button"
         className="custom-select__trigger"
@@ -161,8 +157,11 @@ export const diagnosisFields = [
   {
     key: "usia",
     label: "Usia",
-    helper: "Kelompok usia saat ini.",
-    options: ["Muda", "Menengah", "Tua"],
+    helper: "Masukkan usia (18-80 tahun).",
+    inputType: "number",
+    min: 18,
+    max: 80,
+    defaultValue: 25,
   },
   {
     key: "riwayat_keluarga",
@@ -224,7 +223,18 @@ export default function DiagnosisSection({ values, onChange, loading, error, onS
               <label key={field.key} className="diagnosis-field">
                 <span className="diagnosis-field__label">{field.label}</span>
                 {field.helper && <span className="diagnosis-field__helper">{field.helper}</span>}
-                <DiagnosisSelect field={field} value={values[field.key]} onChange={onChange} />
+                {field.options ? (
+                  <DiagnosisSelect field={field} value={values[field.key]} onChange={onChange} />
+                ) : (
+                  <input
+                    type={field.inputType || "text"}
+                    min={field.min}
+                    max={field.max}
+                    value={values[field.key] ?? ""}
+                    onChange={(e) => onChange(field.key, e.target.value)}
+                    className="diagnosis-input"
+                  />
+                )}
               </label>
             ))}
           </div>

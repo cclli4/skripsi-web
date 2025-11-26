@@ -19,3 +19,30 @@ export async function fetchHistory() {
   }
   return res.json();
 }
+
+async function handleJson(res, context) {
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg = data?.detail || `${context} failed: ${res.status}`;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+export async function registerUser(payload) {
+  const res = await fetch(`${API_BASE}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleJson(res, "POST /auth/register");
+}
+
+export async function loginUser(payload) {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleJson(res, "POST /auth/login");
+}
