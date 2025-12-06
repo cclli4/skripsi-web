@@ -24,7 +24,10 @@ OUTPUT_DOMAIN = list(range(0, 101))  # 0..100
 
 
 def _rule_firing(rule: ExpertRule, fuzzified: Dict[str, Dict[str, float]]) -> float:
-    """Hitung firing strength rule menggunakan min(μ kondisi)."""
+    """
+    Hitung firing strength rule menggunakan AND = min(μ kondisi).
+    Rule gagal jika ada kondisi yang tidak difuzzifikasi atau semua μ=0.
+    """
     mus: List[float] = []
     for key, expected in rule.conditions.items():
         if key not in fuzzified:
@@ -33,7 +36,6 @@ def _rule_firing(rule: ExpertRule, fuzzified: Dict[str, Dict[str, float]]) -> fl
         mu_feature = fuzzified[key]
         best_mu = max(mu_feature.get(opt, 0.0) for opt in options)
         mus.append(best_mu)
-
     if not mus:
         return 0.0
     return min(mus)
@@ -55,9 +57,19 @@ def _aggregate_outputs(fired_rules: List[Tuple[float, str]]) -> List[float]:
 
 
 def _centroid(aggregated: List[float]) -> float:
+    # Hitung centroid hanya pada rentang di mana μ > 0 agar himpunan yang tidak aktif tidak berpengaruh.
+    active_indices = [i for i, mu in enumerate(aggregated) if mu > 0]
+    if not active_indices:
+        return 0.0
+
+    start = min(active_indices)
+    end = max(active_indices)
+
     numerator = 0.0
     denominator = 0.0
-    for z, mu in zip(OUTPUT_DOMAIN, aggregated):
+    for i in range(start, end + 1):
+        z = OUTPUT_DOMAIN[i]
+        mu = aggregated[i]
         numerator += z * mu
         denominator += mu
     if denominator == 0:
@@ -87,4 +99,3 @@ def compute_risk(features: Dict[str, object]) -> Tuple[float, str]:
     risk_value = _centroid(aggregated)
     risk_category = risk_category_from_value(risk_value)
     return risk_value, risk_category
-

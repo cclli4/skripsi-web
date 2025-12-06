@@ -12,10 +12,28 @@ export async function postDiagnosis(features) {
   return res.json();
 }
 
-export async function fetchHistory() {
-  const res = await fetch(`${API_BASE}/history`, { method: "GET" });
+export async function fetchHistory(token) {
+  const headers = { "Content-Type": "application/json" };
+  const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("auth_token") : "");
+  if (authToken) {
+    headers.Authorization = `Bearer ${authToken}`;
+  }
+  const res = await fetch(`${API_BASE}/history`, { method: "GET", headers });
   if (!res.ok) {
     throw new Error(`GET /history failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function clearHistory() {
+  const headers = { "Content-Type": "application/json" };
+  const authToken = typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
+  if (authToken) {
+    headers.Authorization = `Bearer ${authToken}`;
+  }
+  const res = await fetch(`${API_BASE}/history`, { method: "DELETE", headers });
+  if (!res.ok) {
+    throw new Error(`DELETE /history failed: ${res.status}`);
   }
   return res.json();
 }

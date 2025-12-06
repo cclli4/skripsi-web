@@ -486,7 +486,8 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap;  <-- HAPUS / GANTI */
+  flex-wrap: nowrap;     /* baru */
   max-width: 1200px;
   margin: 0 auto;
   padding: 8px 24px;
@@ -494,11 +495,20 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   box-shadow: 0 10px 30px rgba(232, 115, 150, 0.2);
 }
 
+/* biar avatar nggak ikut mengecil */
+.primary-nav__auth {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto; /* jangan shrink */
+}
+
+
 .primary-nav__links {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
   flex: 1;
 }
 
@@ -644,16 +654,56 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   background: #ffe4f0;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .primary-nav__inner {
     flex-direction: column;
     align-items: stretch;
+    padding: 10px 12px;
+    border-radius: 18px;
+    gap: 8px;
+  }
+
+  .primary-nav__links {
+    flex-wrap: nowrap;       /* jangan wrap */
+    justify-content: flex-start;
+    overflow-x: auto;        /* kalau kepanjangan, bisa geser kiri-kanan */
+    gap: 8px;
+    padding: 4px 0 2px;
+    scrollbar-width: none;
+  }
+
+  .primary-nav__links::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
+@media (max-width: 640px) {
+  .primary-nav {
+    padding: 10px 0;
+  }
+  .primary-nav__inner {
+    border-radius: 14px;
+    padding: 10px;
+    gap: 6px;
   }
   .primary-nav__links {
-    justify-content: center;
+    gap: 6px;
+  }
+  .primary-nav__link {
+    padding: 8px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.12);
   }
   .primary-nav__auth {
-    justify-content: center;
+    order: -1;
+  }
+  .primary-nav__profile,
+  .primary-nav__login {
+    border-radius: 12px;
+    box-shadow: none;
+    background: #ffffff;
+    color: #4d172b;
   }
 }
 
@@ -739,6 +789,7 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   border: none;
   background: var(--card-cta-bg, #ffb6f0);
   color: var(--card-cta-color, #4d172b);
+  text-decoration: none;
   border-radius: 50%;
   width: 44px;
   height: 44px;
@@ -799,6 +850,7 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   padding: 12px 22px;
   background: transparent;
   color: #fff;
+  text-decoration: none;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
@@ -840,7 +892,7 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
 .panduan-section {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
   padding: 0;
   border-radius: 0;
   background: transparent;
@@ -849,6 +901,14 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
 
 .panduan-copy__emphasis {
   display: block;
+}
+
+.panduan-desktop {
+  display: block;
+}
+
+.panduan-mobile {
+  display: none;
 }
 
 .panduan-grid {
@@ -861,7 +921,7 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
 .panduan-grid__cell {
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 32px;
 }
 
 .panduan-grid__intro {
@@ -884,6 +944,13 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
 
 .panduan-grid__visual {
   align-self: flex-start;
+  gap: 20px;
+}
+
+.panduan-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .panduan-step {
@@ -938,12 +1005,20 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   object-fit: cover;
 }
 
-@media (max-width: 900px) {
-  .panduan-section {
-    padding: 0;
+@media (max-width: 1024px) {
+  .panduan-desktop {
+    display: none;
   }
-  .panduan-grid {
-    grid-template-columns: 1fr;
+  .panduan-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .panduan-mobile .panduan-title {
+    margin-bottom: 8px;
+  }
+  .panduan-mobile .panduan-visual {
+    display: none;
   }
 }
 
@@ -1355,6 +1430,14 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   flex-wrap: wrap;
 }
 
+.riwayat-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 .riwayat-eyebrow {
   margin: 0 0 6px;
   letter-spacing: 0.18em;
@@ -1385,6 +1468,34 @@ input { padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; }
   color: #e87396;
   font-weight: 700;
   box-shadow: 0 12px 22px rgba(77, 23, 43, 0.08);
+}
+
+.riwayat-clear {
+  border: 1px solid rgba(77, 23, 43, 0.2);
+  background: #ffffff;
+  color: #4d172b;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.riwayat-clear:hover:not(:disabled) {
+  background: #ffe4f0;
+  transform: translateY(-1px);
+}
+
+.riwayat-clear:disabled {
+  cursor: not-allowed;
+  color: #9ca3af;
+  background: #f8fafc;
+}
+
+.riwayat-error {
+  margin: 0;
+  color: #b91c1c;
+  font-weight: 600;
 }
 
 .riwayat-list {

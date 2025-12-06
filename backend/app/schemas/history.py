@@ -12,3 +12,7 @@ class HistoryItem(BaseModel):
 
 class HistoryList(BaseModel):
     items: List[HistoryItem]
+
+
+class HistoryClearResponse(BaseModel):
+    deleted: int

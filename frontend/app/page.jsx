@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { postDiagnosis, fetchHistory } from "@/lib/api";
+import { postDiagnosis, fetchHistory, clearHistory } from "@/lib/api";
 import Nav from "./components/Nav";
 import HomeSection from "./sections/Home";
 import InformasiSection from "./sections/Informasi";
@@ -26,14 +26,27 @@ export default function SinglePage() {
   const [error, setError] = useState("");
   const [hasil, setHasil] = useState(null);
   const [riwayat, setRiwayat] = useState([]);
+  const [clearingHistory, setClearingHistory] = useState(false);
+  const [historyError, setHistoryError] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     (async () => {
+      const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
+      const logged = Boolean(token);
+      setIsLoggedIn(logged);
+      if (!logged) {
+        setRiwayat([]);
+        setHistoryError("Masuk untuk melihat riwayat.");
+        return;
+      }
       try {
-        const data = await fetchHistory();
+        const data = await fetchHistory(token);
         setRiwayat(data.items || []);
+        setHistoryError("");
       } catch (e) {
         console.warn("Gagal memuat riwayat", e);
+        setHistoryError("Gagal memuat riwayat. Pastikan backend berjalan dan Anda sudah login.");
       }
     })();
   }, []);
@@ -52,8 +65,12 @@ export default function SinglePage() {
         risk: result.risk_category,
       }));
       setHasil({ ...result, detail });
-      const data = await fetchHistory();
-      setRiwayat(data.items || []);
+      const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
+      if (token) {
+        const history = await fetchHistory(token);
+        setRiwayat(history.items || []);
+        setHistoryError("");
+      }
       const el = document.getElementById("hasil");
       el?.scrollIntoView({ behavior: "smooth" });
     } catch (err) {
@@ -66,6 +83,26 @@ export default function SinglePage() {
 
   const handleFeatureChange = (key, value) => {
     setFeatureValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleClearHistory = async () => {
+    if (clearingHistory) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
+    if (!token) {
+      setHistoryError("Masuk untuk menghapus riwayat.");
+      return;
+    }
+    setClearingHistory(true);
+    setHistoryError("");
+    try {
+      await clearHistory();
+      setRiwayat([]);
+    } catch (err) {
+      console.error(err);
+      setHistoryError("Gagal menghapus riwayat. Pastikan backend berjalan dan mengizinkan permintaan.");
+    } finally {
+      setClearingHistory(false);
+    }
   };
 
   return (
@@ -87,7 +124,13 @@ export default function SinglePage() {
       <div style={{ height: 20 }} />
       <HasilSection hasil={hasil} />
       <div style={{ height: 20 }} />
-      <RiwayatSection items={riwayat} />
+      <RiwayatSection
+        items={riwayat}
+        onClear={handleClearHistory}
+        clearing={clearingHistory}
+        error={historyError}
+        isLoggedIn={isLoggedIn}
+      />
     </>
   );
 }

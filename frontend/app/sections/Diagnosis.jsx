@@ -82,35 +82,25 @@ export const diagnosisFields = [
     key: "sifat_benjolan",
     label: "Sifat Benjolan",
     helper: "Karakteristik pergerakan benjolan saat diraba.",
-    options: ["Bisa digerakkan", "Agak kaku", "Tidak bisa digerakkan"],
+    options: ["Bisa digerakkan", "Terbatas", "Tidak bisa digerakkan"],
   },
   {
     key: "letak_benjolan",
     label: "Letak Benjolan",
     helper: "Posisi benjolan relatif terhadap permukaan kulit.",
-    options: [
-      "Tidak terlihat",
-      "Menonjol pada permukaan kulit",
-      "Permukaan kulit tampak benjolan",
-    ],
+    options: ["Tidak terlihat", "Teraba di dalam payudara", "Menonjol di permukaan"],
   },
   {
     key: "kondisi_kulit_benjolan",
     label: "Kondisi Kulit di Sekitar Benjolan",
     helper: "Perubahan warna atau kilau pada kulit di area benjolan.",
-    options: ["Kemerahan", "Sewarna Kulit", "Mengkilat"],
+    options: ["Sewarna Kulit", "Mengkilat", "Kemerahan"],
   },
   {
     key: "rasa_nyeri",
     label: "Rasa Nyeri",
     helper: "Tingkat rasa nyeri yang dirasakan.",
     options: ["Tidak nyeri", "Nyeri ringan", "Nyeri berat"],
-  },
-  {
-    key: "kulit_payudara_berubah",
-    label: "Kulit Payudara Berubah",
-    helper: "Apakah ada perubahan tekstur kulit payudara.",
-    options: ["Tidak ada", "Ada"],
   },
   {
     key: "puting_masuk_dalam",
@@ -191,7 +181,7 @@ export const diagnosisFields = [
     key: "pola_makan_gaya_hidup",
     label: "Pola Makan & Gaya Hidup",
     helper: "Frekuensi kebiasaan kurang sehat yang dijalani.",
-    options: ["Jarang", "Kadang", "Sering"],
+    options: ["Tidak", "Kadang", "Sering"],
   },
   {
     key: "penurunan_berat_badan",

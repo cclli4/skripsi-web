@@ -71,8 +71,20 @@ const parseRiskValue = (value) => {
   return { display: String(value), percent: 0 };
 };
 
-export default function RiwayatSection({ items }) {
-  const displayItems = items && items.length > 0 ? items : dummyRiwayatItems;
+export default function RiwayatSection({
+  items,
+  onClear,
+  clearing = false,
+  error = "",
+  isLoggedIn = true,
+}) {
+  const hasArray = Array.isArray(items);
+  const hasItems = hasArray && items.length > 0;
+  const showEmptyState = hasArray && items.length === 0;
+  const displayItems = hasItems ? items : dummyRiwayatItems;
+  const itemCount = hasArray ? items.length : displayItems.length;
+  const canClear = typeof onClear === "function";
+  const showLoginPrompt = !isLoggedIn;
 
   return (
     <section id="riwayat" className="section-full riwayat-section" style={{ scrollMarginTop: 80 }}>
@@ -85,11 +97,29 @@ export default function RiwayatSection({ items }) {
               Lihat jejak hasil prediksi dan pantau perubahan skor risiko seiring waktu.
             </p>
           </div>
-          <div className="riwayat-chip">
-            {displayItems.length} data • Terbaru lebih dulu
+          <div className="riwayat-actions">
+            <div className="riwayat-chip">
+              {itemCount} data - Terbaru lebih dulu
+            </div>
+            {canClear && (
+              <button
+                type="button"
+                className="riwayat-clear"
+                onClick={onClear}
+                disabled={clearing || !hasItems}
+              >
+                {clearing ? "Menghapus..." : "Hapus riwayat"}
+              </button>
+            )}
           </div>
         </div>
-        {displayItems && displayItems.length > 0 ? (
+        {error && <p className="riwayat-error">{error}</p>}
+        {showLoginPrompt ? (
+          <div className="riwayat-empty">
+            <p>Riwayat memerlukan login.</p>
+            <span>Masuk dulu untuk melihat dan menyimpan riwayat diagnosis.</span>
+          </div>
+        ) : !showEmptyState && displayItems && displayItems.length > 0 ? (
           <ul className="riwayat-list">
             {displayItems.map((it) => {
               const createdAt = formatDate(it.created_at);
@@ -97,13 +127,14 @@ export default function RiwayatSection({ items }) {
               const description =
                 it.description ||
                 `Prediksi kategori ${it.risk_category || "tidak diketahui"} dengan skor ${display}.`;
+              const idLabel = it.id ?? it.created_at ?? "-";
               return (
-                <li key={it.id || it.created_at} className="riwayat-card">
+                <li key={it.id || it.created_at || description} className="riwayat-card">
                   <span className="riwayat-card__dot" aria-hidden="true" />
                   <div className="riwayat-card__header">
                     <div>
                       <div className="riwayat-card__meta">
-                        <span className="riwayat-card__id">#{it.id || "—"}</span>
+                        <span className="riwayat-card__id">#{idLabel}</span>
                         <time dateTime={it.created_at || ""}>{createdAt}</time>
                       </div>
                       <h3>{it.risk_category || "Tidak diketahui"}</h3>

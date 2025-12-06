@@ -9,7 +9,8 @@ from typing import Dict, List, Tuple
 from app.fuzzy.membership_functions import RISK_NUMERIC, canonicalize_features, similarity_vector
 
 APP_DIR = Path(__file__).resolve().parents[1]
-CSV_PATH = APP_DIR / "data" / "kasus_cbr.csv"
+# Gunakan dataset 150 kasus sebagai basis CBR
+CSV_PATH = APP_DIR / "data" / "DATA_CBR.csv"
 
 CSV_TO_FEATURE = {
     "benjolan_pada_payudara": "benjolan_payudara",
@@ -17,7 +18,6 @@ CSV_TO_FEATURE = {
     "letak_benjolan": "letak_benjolan",
     "benjolan_permukaan_kulit": "kondisi_kulit_benjolan",
     "rasa_nyeri": "rasa_nyeri",
-    "kulit_payudara_berubah": "kulit_payudara_berubah",
     "puting_masuk_ke_dalam": "puting_masuk_dalam",
     "keluar_cairan_dari_puting": "keluar_cairan_puting",
     "luka_pada_puting_atau_sekitar_payudara": "luka_di_puting",
@@ -60,6 +60,7 @@ def _load_cases() -> List[Dict]:
                     "id": idx,
                     "risk_category": row.get("label_risiko", "Rendah"),
                     "risk_value": RISK_NUMERIC.get(row.get("label_risiko", ""), 50.0),
+                    "rule_origin": row.get("Nomor_Rule_Asal"),
                     "features": canonicalize_features(normalized),
                 }
             )
@@ -94,6 +95,8 @@ def find_similar_cases(features: Dict[str, object]) -> List[Dict]:
                 "id": case["id"],
                 "risk_value": float(case["risk_value"]),
                 "risk_category": case["risk_category"],
+                "rule_origin": case.get("rule_origin"),
+                "similarity": float(similarity),
             }
         )
     return top_cases

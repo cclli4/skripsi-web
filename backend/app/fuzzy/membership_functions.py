@@ -22,26 +22,23 @@ FEATURE_MFS: Dict[str, Dict[str, Tuple[float, ...]]] = {
     },
     "sifat_benjolan": {
         "Bisa digerakkan": (0.0, 0.0, 0.5),
-        "Agak kaku": (0.2, 0.5, 0.8),
+        "Terbatas": (0.2, 0.5, 0.8),
         "Tidak bisa digerakkan": (0.5, 1.0, 1.0),
     },
     "letak_benjolan": {
-        "Tidak terlihat": (0.0, 0.0, 0.3, 0.5),
-        "Menonjol pada permukaan kulit": (0.4, 0.6, 1.0, 1.0),
+        "Tidak terlihat": (0.0, 0.0, 0.5),
+        "Teraba di dalam payudara": (0.2, 0.5, 0.8),
+        "Menonjol di permukaan": (0.5, 1.0, 1.0),
     },
     "kondisi_kulit_benjolan": {
-        "Kemerahan": (0.0, 0.0, 0.5),
-        "Sewarna Kulit": (0.2, 0.5, 0.8),
-        "Mengkilat": (0.5, 1.0, 1.0),
+        "Sewarna Kulit": (0.0, 0.0, 0.5),
+        "Mengkilat": (0.2, 0.5, 0.8),
+        "Kemerahan": (0.5, 1.0, 1.0),
     },
     "rasa_nyeri": {
         "Tidak nyeri": (0.0, 0.0, 0.5),
         "Nyeri ringan": (0.2, 0.5, 0.8),
         "Nyeri berat": (0.5, 1.0, 1.0),
-    },
-    "kulit_payudara_berubah": {
-        "Tidak ada": (0.0, 0.0, 0.3, 0.5),
-        "Ada": (0.4, 0.6, 1.0, 1.0),
     },
     "puting_masuk_dalam": {
         "Tidak": (0.0, 0.0, 0.3, 0.5),
@@ -99,7 +96,7 @@ FEATURE_MFS: Dict[str, Dict[str, Tuple[float, ...]]] = {
         "> 12 bulan": (0.7, 0.8, 1.0, 1.0),
     },
     "pola_makan_gaya_hidup": {
-        "Jarang": (0.0, 0.0, 0.5),
+        "Tidak": (0.0, 0.0, 0.5),
         "Kadang": (0.2, 0.5, 0.8),
         "Sering": (0.5, 1.0, 1.0),
     },
@@ -129,7 +126,11 @@ FEATURE_SCALES: Dict[str, List[Dict[str, object]]] = {
     ],
     "sifat_benjolan": [
         {"label": "Bisa digerakkan", "score": 0.0, "aliases": ["bisa digerakkan"]},
-        {"label": "Agak kaku", "score": 0.5, "aliases": ["agak kaku"]},
+        {
+            "label": "Terbatas",
+            "score": 0.5,
+            "aliases": ["terbatas", "agak kaku"],  # alias untuk data lama
+        },
         {
             "label": "Tidak bisa digerakkan",
             "score": 1.0,
@@ -139,33 +140,35 @@ FEATURE_SCALES: Dict[str, List[Dict[str, object]]] = {
     "letak_benjolan": [
         {"label": "Tidak terlihat", "score": 0.0, "aliases": ["tidak terlihat"]},
         {
-            "label": "Menonjol pada permukaan kulit",
-            "score": 0.7,
-            "aliases": ["menonjol pada permukaan kulit", "menonjol"],
+            "label": "Teraba di dalam payudara",
+            "score": 0.5,
+            "aliases": [
+                "teraba di dalam payudara",
+                "teraba di dalam",
+                "teraba",
+            ],
         },
         {
-            "label": "Permukaan kulit tampak benjolan",
+            "label": "Menonjol di permukaan",
             "score": 1.0,
             "aliases": [
+                "menonjol di permukaan",
+                "menonjol pada permukaan kulit",
+                "menonjol",
                 "permukaan kulit tampak benjolan",
                 "benjolan permukaan",
-                "menonjol",
             ],
         },
     ],
     "kondisi_kulit_benjolan": [
-        {"label": "Kemerahan", "score": 0.0, "aliases": ["kemerahan"]},
-        {"label": "Sewarna Kulit", "score": 0.5, "aliases": ["sewarna kulit"]},
-        {"label": "Mengkilat", "score": 1.0, "aliases": ["mengkilat"]},
+        {"label": "Sewarna Kulit", "score": 0.0, "aliases": ["sewarna kulit"]},
+        {"label": "Mengkilat", "score": 0.5, "aliases": ["mengkilat"]},
+        {"label": "Kemerahan", "score": 1.0, "aliases": ["kemerahan"]},
     ],
     "rasa_nyeri": [
         {"label": "Tidak nyeri", "score": 0.0, "aliases": ["tidak nyeri"]},
         {"label": "Nyeri ringan", "score": 0.5, "aliases": ["nyeri ringan"]},
         {"label": "Nyeri berat", "score": 1.0, "aliases": ["nyeri berat"]},
-    ],
-    "kulit_payudara_berubah": [
-        {"label": "Tidak ada", "score": 0.0, "aliases": ["tidak ada", "tidak"]},
-        {"label": "Ada", "score": 1.0, "aliases": ["ada", "ya"]},
     ],
     "puting_masuk_dalam": [
         {"label": "Tidak", "score": 0.0, "aliases": ["tidak"]},
@@ -227,7 +230,7 @@ FEATURE_SCALES: Dict[str, List[Dict[str, object]]] = {
         {"label": "> 12 bulan", "score": 1.0, "aliases": ["> 12 bulan", ">12 bulan", "> 12", ">12"]},
     ],
     "pola_makan_gaya_hidup": [
-        {"label": "Jarang", "score": 0.0, "aliases": ["jarang"]},
+        {"label": "Tidak", "score": 0.0, "aliases": ["jarang", "tidak", "tidak jarang"]},
         {"label": "Kadang", "score": 0.5, "aliases": ["kadang"]},
         {"label": "Sering", "score": 1.0, "aliases": ["sering"]},
     ],
@@ -308,6 +311,49 @@ def _mf_centroid(params: Tuple[float, ...]) -> float:
     return numerator / denominator if denominator else 0.0
 
 
+def _normalize_kecepatan(raw_text: str) -> str:
+    txt = raw_text.replace("–", "-").replace("—", "-").replace("?", "-").replace("\ufffd", "-")
+    low = txt.lower().strip()
+    # Langsung cocokkan alias
+    aliases = {
+        "< 1 minggu": ["< 1 minggu", "<1 minggu", "< 1mg", "<1mg"],
+        "1-4 bulan": ["1-4 bulan", "1-4", "1 - 4", "1 sampai 4"],
+        "5-12 bulan": ["5-12 bulan", "5-12", "5 - 12", "512", "5 sampai 12"],
+        "> 12 bulan": ["> 12 bulan", ">12 bulan", ">12", "> 12", "lebih 12"],
+    }
+    for label, alist in aliases.items():
+        for a in alist:
+            if low == a:
+                return label
+    # Jika ada angka, map berdasarkan rentang
+    import re
+
+    nums = re.findall(r"\d+", low)
+    if nums:
+        try:
+            vals = list(map(int, nums))
+            if len(vals) == 1:
+                n = vals[0]
+                if n <= 1:
+                    return "< 1 minggu"
+                if n <= 4:
+                    return "1-4 bulan"
+                if n <= 12:
+                    return "5-12 bulan"
+                return "> 12 bulan"
+            if len(vals) >= 2:
+                mn, mx = min(vals), max(vals)
+                if mx <= 4:
+                    return "1-4 bulan"
+                if mn >= 5 and mx <= 12:
+                    return "5-12 bulan"
+                if mx > 12:
+                    return "> 12 bulan"
+        except ValueError:
+            pass
+    return txt
+
+
 def canonicalize_value(feature: str, raw_value: object) -> Optional[str]:
     """Normalisasi label: alias -> label kanonik; usia -> tetap angka apa adanya."""
     if raw_value is None:
@@ -317,6 +363,9 @@ def canonicalize_value(feature: str, raw_value: object) -> Optional[str]:
         return str(raw_value).strip()
 
     raw_text = str(raw_value).strip()
+    # Normalisasi kecepatan_gejala
+    if feature == "kecepatan_gejala":
+        raw_text = _normalize_kecepatan(raw_text)
     if raw_text == "":
         return None
 

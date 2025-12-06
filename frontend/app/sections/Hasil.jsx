@@ -43,6 +43,10 @@ const dummyDiagnosisResult = {
     example: field.options?.[1] ?? field.options?.[0] ?? "-",
     risk: riskSequence[index % riskSequence.length],
   })),
+  similar_cases: [
+    { id: 1, risk_value: 35, risk_category: "Rendah", rule_origin: "R1" },
+    { id: 2, risk_value: 62, risk_category: "Tinggi", rule_origin: "R15" },
+  ],
 };
 
 const normalizeRisk = (value) => {
@@ -70,7 +74,7 @@ export default function HasilSection({ hasil }) {
   const similarCases =
     Array.isArray(displayResult?.similar_cases) && displayResult.similar_cases.length > 0
       ? displayResult.similar_cases
-      : dummyDiagnosisResult.similar_cases;
+      : dummyDiagnosisResult.similar_cases || [];
   const createdAt = displayResult?.created_at ? new Date(displayResult.created_at) : null;
   const formattedDate = createdAt && !Number.isNaN(createdAt.getTime())
     ? createdAt.toLocaleString("id-ID", {
@@ -138,7 +142,7 @@ export default function HasilSection({ hasil }) {
         <div className="hasil-risk-panel">
           <header>
             <h3>Risiko per Gejala</h3>
-            <p>Kami buatkan dummy satu contoh interpretasi untuk setiap field dalam formulir diagnosis.</p>
+            <p>Berikut interpretasi untuk setiap isian gejala yang kamu kirimkan.</p>
           </header>
           <ul className="hasil-risk-list">
             {detailItems.map((item) => {
@@ -148,7 +152,7 @@ export default function HasilSection({ hasil }) {
                   <div className="hasil-risk__label">
                     <p>{item.label}</p>
                     {item.helper && <span>{item.helper}</span>}
-                    {item.example && <em>Nilai contoh: {item.example}</em>}
+                    {item.example && <em>Nilai: {item.example}</em>}
                   </div>
                   <span className="hasil-risk__badge">{item.risk ?? "N/A"}</span>
                 </li>
@@ -156,6 +160,28 @@ export default function HasilSection({ hasil }) {
             })}
           </ul>
         </div>
+
+        {similarCases.length > 0 && (
+          <div className="hasil-risk-panel">
+            <header>
+              <h3>Kasus Serupa (CBR)</h3>
+              <p>Menunjukkan kasus terdekat dari basis data beserta risiko dan asal rule (jika ada).</p>
+            </header>
+            <ul className="hasil-similar-list">
+              {similarCases.map((item) => (
+                <li key={item.id}>
+                  <div>
+                    <p>Kasus #{item.id}</p>
+                    {item.rule_origin && <span className="hasil-similar-rule">Rule asal: {item.rule_origin}</span>}
+                  </div>
+                  <div className={`hasil-similar-badge hasil-similar-badge--${item.risk_category?.toLowerCase?.() ?? "default"}`}>
+                    {item.risk_category} ({Number(item.risk_value)?.toFixed?.(0) ?? "-"}%)
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );

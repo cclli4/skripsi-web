@@ -12,7 +12,6 @@ _FIELD_LABELS = {
     "letak_benjolan": "Letak Benjolan",
     "kondisi_kulit_benjolan": "Kondisi Kulit di Sekitar Benjolan",
     "rasa_nyeri": "Rasa Nyeri",
-    "kulit_payudara_berubah": "Kulit Payudara Berubah",
     "puting_masuk_dalam": "Puting Masuk ke Dalam",
     "keluar_cairan_puting": "Keluar Cairan dari Puting",
     "luka_di_puting": "Luka di Puting atau Sekitar",
@@ -44,4 +43,3 @@ def list_gejala():
             )
         )
     return GejalaList(items=items)
-

@@ -3,51 +3,59 @@ import Image from "next/image";
 const highlightArticles = [
   {
     id: 1,
-    title: "Gejala Umum Kanker Serviks",
-    summary: "Kenali tanda awal seperti perdarahan tidak normal dan nyeri panggul sebelum terjadi progres lanjut.",
-    tag: "Edukasi",
+    title: "6 Ciri-Ciri Kanker Payudara yang Sering Diabaikan",
+    summary: "Tanda awal seperti perubahan kulit, benjolan, dan cairan dari puting sering luput diperhatikan.",
+    tag: "Gejala",
+    link: "https://www.alodokter.com/6-ciri-ciri-kanker-payudara-yang-sering-diabaikan",
   },
   {
     id: 2,
-    title: "Pentingnya Deteksi Dini",
-    summary: "Pap smear dan IVA test menjadi kunci untuk meminimalkan risiko komplikasi jangka panjang.",
-    tag: "Deteksi",
+    title: "Kanker Payudara",
+    summary: "Ulasan menyeluruh tentang penyebab, faktor risiko, dan tata laksana kanker payudara.",
+    tag: "Dasar",
+    link: "https://www.alodokter.com/kanker-payudara",
   },
   {
     id: 3,
-    title: "Manajemen Risiko",
-    summary: "Faktor gaya hidup, vaksinasi HPV, serta pemeriksaan rutin dapat mengurangi probabilitas risiko.",
-    tag: "Pencegahan",
+    title: "Edukasi Bulan Kesadaran Kanker Payudara",
+    summary: "Program literasi kesehatan RS Persahabatan untuk meningkatkan kewaspadaan dan deteksi dini.",
+    tag: "Edukasi",
+    link: "https://rspersahabatan.co.id/read/berita/edukasi-kesehatan-dalam-rangka-bulan-kesadaran-kanker-payudara-breast-cancer-awareness-month",
   },
   {
     id: 4,
-    title: "Membaca Hasil Diagnosis",
-    summary: "Pelajari bagaimana membaca hasil pemeriksaan mandiri sebelum berkonsultasi ke tenaga medis.",
-    tag: "Panduan",
+    title: "5 Gejala Awal Kanker Payudara yang Sering Diabaikan",
+    summary: "Kenali ciri awal seperti benjolan kecil, perubahan bentuk, atau rasa nyeri tersendiri.",
+    tag: "Gejala",
+    link: "https://www.halodoc.com/artikel/5-gejala-awal-kanker-payudara-yang-sering-diabaikan",
   },
   {
     id: 5,
-    title: "Kasus Serupa",
-    summary: "Rangkum studi kasus pasien dengan gejala mirip untuk membantu mengambil tindakan awal.",
-    tag: "CBR",
+    title: "Deteksi Dini Kanker Payudara",
+    summary: "Panduan pemeriksaan payudara sendiri (SADARI) dan peran pemeriksaan klinis.",
+    tag: "Deteksi",
+    link: "https://www.mitrakeluarga.com/artikel/deteksi-dini-kanker-payudara",
   },
   {
     id: 6,
-    title: "Langkah Berikutnya",
-    summary: "Ketahui kapan harus segera ke fasilitas kesehatan setelah menemukan gejala mencurigakan.",
-    tag: "Lanjutkan",
+    title: "Mengenal Berbagai Tipe Kanker Payudara",
+    summary: "Bedakan tipe-tipe kanker payudara untuk memahami pilihan terapi yang sesuai.",
+    tag: "Tipe",
+    link: "https://www.yayasankankerpayudaraindonesia.id/berita/read/10/mengenal-berbagai-tipe-kanker-payudara",
   },
   {
     id: 7,
-    title: "Nutrisi Pendukung",
-    summary: "Pola makan seimbang kaya antioksidan dapat membantu menjaga kesehatan jaringan payudara.",
-    tag: "Gaya Hidup",
+    title: "Cegah Kanker Payudara dengan SADARI dan SADANIS",
+    summary: "Panduan resmi Kemenkes untuk pemeriksaan mandiri dan klinis secara rutin.",
+    tag: "Pencegahan",
+    link: "https://kemkes.go.id/id/cegah-kanker-payudara-dengan-sadari-dan-sadanis",
   },
   {
     id: 8,
-    title: "Mindfulness & SADARI",
-    summary: "Teknik relaksasi dan pemeriksaan mandiri rutin membantu mengenali perubahan tubuh lebih cepat.",
-    tag: "Self Care",
+    title: "6 Pola Hidup Sehat Cegah Kanker Payudara",
+    summary: "Gaya hidup sehat untuk menjaga kesehatan payudara, mulai pola makan hingga olahraga.",
+    tag: "Gaya Hidup",
+    link: "https://www.siloamhospitals.com/informasi-siloam/artikel/6-pola-hidup-sehat-cegah-kanker-payudara?utm_source=chatgpt.com",
   },
 ];
 
@@ -111,9 +119,10 @@ const cardThemes = [
 ];
 
 const featuredArticle = {
-  title: "Bagaimana Fuzzy Mamdani Membantu Diagnosis Awal?",
+  title: "Deteksi Dini Kanker Payudara dengan SADARI dan SADANIS",
   excerpt:
-    "Metode Fuzzy Mamdani memungkinkan penilaian risiko lebih manusiawi dengan mempertimbangkan ketidakpastian data pasien. Pelajari bagaimana metode ini dikombinasikan dengan Case-Based Reasoning untuk menghasilkan rekomendasi yang lebih personal.",
+    "Langkah praktis memeriksa payudara sendiri dan pentingnya pemeriksaan klinis berkala untuk menemukan perubahan sedini mungkin.",
+  link: "https://upk.kemkes.go.id/new/deteksi-dini-kanker-payudara-dengan-sadari-dan-sadanis?utm_source=chatgpt.com",
 };
 
 export default function InformasiSection() {
@@ -130,7 +139,7 @@ export default function InformasiSection() {
         </header>
 
         <div className="informasi-grid">
-          {highlightArticles.map(({ id, title, summary, tag }, index) => {
+          {highlightArticles.map(({ id, title, summary, tag, link }, index) => {
             const theme = cardThemes[index % cardThemes.length];
             return (
               <article
@@ -147,9 +156,15 @@ export default function InformasiSection() {
                 <div className="informasi-card__meta">{tag}</div>
                 <h3>{title}</h3>
                 <p>{summary}</p>
-                <button type="button" className="informasi-card__cta" aria-label={`Baca ${title}`}>
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="informasi-card__cta"
+                  aria-label={`Baca ${title}`}
+                >
                   &rarr;
-                </button>
+                </a>
               </article>
             );
           })}
@@ -169,9 +184,14 @@ export default function InformasiSection() {
             <p className="eyebrow">Sorotan Mendalam</p>
             <h3>{featuredArticle.title}</h3>
             <p>{featuredArticle.excerpt}</p>
-            <button type="button" className="informasi-feature__cta">
+            <a
+              href={featuredArticle.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="informasi-feature__cta"
+            >
               Baca artikel lengkap &rarr;
-            </button>
+            </a>
           </div>
         </div>
       </div>
