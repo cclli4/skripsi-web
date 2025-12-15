@@ -1,5 +1,5 @@
 """
-Implementasi Fuzzy Mamdani berbasis rule R1-R16.
+Implementasi Fuzzy Mamdani berbasis rule R1-R18.
 Langkah:
 - Fuzzifikasi input (menggunakan MF segitiga/trapesium yang diberikan).
 - Evaluasi rule dengan AND=min (OR pada pilihan nilai per kondisi = max).

@@ -68,12 +68,13 @@ export default function RegisterPage() {
       full_name: formValues.fullName,
       email: formValues.email,
       password: formValues.password,
+      role: "patient",
     })
       .then(() => {
         if (typeof window !== "undefined") {
           localStorage.setItem(
             "user_profile",
-            JSON.stringify({ full_name: formValues.fullName, email: formValues.email })
+            JSON.stringify({ full_name: formValues.fullName, email: formValues.email, role: "patient" })
           );
         }
         setStatusMessage("Registrasi berhasil! Mengalihkan ke halaman login...");
@@ -94,6 +95,9 @@ export default function RegisterPage() {
           <p className="auth-page__description">
             Daftarkan akun agar riwayat diagnosis, rekomendasi, dan catatan tindak lanjut tersimpan aman.
             Dengan akun ini, Anda bisa melanjutkan pemantauan risiko kapan saja.
+          </p>
+          <p className="auth-hint">
+            Form ini khusus untuk pasien. Akun pakar/admin sudah dibuat terpusat dan cukup langsung login.
           </p>
 
           <ul className="auth-benefits">

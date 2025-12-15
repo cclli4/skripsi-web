@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -8,6 +8,7 @@ class HistoryItem(BaseModel):
     created_at: datetime
     risk_value: float
     risk_category: str
+    features: Dict[str, Any]
 
 
 class HistoryList(BaseModel):

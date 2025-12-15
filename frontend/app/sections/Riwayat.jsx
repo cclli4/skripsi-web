@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { buildFeatureEntries } from "@/lib/features";
+
 const dummyRiwayatItems = [
   {
     id: 1,
@@ -5,6 +10,11 @@ const dummyRiwayatItems = [
     risk_value: "12%",
     description: "Pemeriksaan awal risiko jatuh.",
     created_at: "2024-04-11T09:32:00.000Z",
+    features: {
+      benjolan_payudara: "Tidak ada",
+      rasa_nyeri: "Tidak nyeri",
+      usia: 28,
+    },
   },
   {
     id: 2,
@@ -12,6 +22,12 @@ const dummyRiwayatItems = [
     risk_value: "46%",
     description: "Update skor setelah sesi fisioterapi.",
     created_at: "2024-04-19T14:12:00.000Z",
+    features: {
+      benjolan_payudara: "Ada",
+      sifat_benjolan: "Terbatas",
+      keluar_cairan_puting: "Jernih",
+      usia: 35,
+    },
   },
   {
     id: 3,
@@ -19,6 +35,11 @@ const dummyRiwayatItems = [
     risk_value: "18%",
     description: "Monitoring berkala harian.",
     created_at: "2024-04-22T07:50:00.000Z",
+    features: {
+      gatal_atau_iritasi: "Kadang",
+      perubahan_ukuran: "Tidak",
+      usia: 30,
+    },
   },
   {
     id: 4,
@@ -26,6 +47,13 @@ const dummyRiwayatItems = [
     risk_value: "72%",
     description: "Laporan setelah pasien mengeluh pusing.",
     created_at: "2024-05-02T16:05:00.000Z",
+    features: {
+      benjolan_payudara: "Ada",
+      letak_benjolan: "Menonjol di permukaan",
+      kondisi_kulit_benjolan: "Kemerahan",
+      penurunan_berat_badan: "Ya",
+      usia: 54,
+    },
   },
   {
     id: 5,
@@ -33,6 +61,12 @@ const dummyRiwayatItems = [
     risk_value: "41%",
     description: "Evaluasi ulang setelah terapi okupasi.",
     created_at: "2024-05-06T08:17:00.000Z",
+    features: {
+      benjolan_di_ketiak: "Tidak",
+      riwayat_keluarga: "Tidak",
+      pola_makan_gaya_hidup: "Kadang",
+      usia: 40,
+    },
   },
 ];
 
@@ -78,6 +112,12 @@ export default function RiwayatSection({
   error = "",
   isLoggedIn = true,
 }) {
+  const [activeItem, setActiveItem] = useState(null);
+
+  useEffect(() => {
+    setActiveItem(null);
+  }, [items]);
+
   const hasArray = Array.isArray(items);
   const hasItems = hasArray && items.length > 0;
   const showEmptyState = hasArray && items.length === 0;
@@ -85,6 +125,12 @@ export default function RiwayatSection({
   const itemCount = hasArray ? items.length : displayItems.length;
   const canClear = typeof onClear === "function";
   const showLoginPrompt = !isLoggedIn;
+
+  const openFeatures = (item) => {
+    setActiveItem(item);
+  };
+
+  const closeFeatures = () => setActiveItem(null);
 
   return (
     <section id="riwayat" className="section-full riwayat-section" style={{ scrollMarginTop: 80 }}>
@@ -98,9 +144,7 @@ export default function RiwayatSection({
             </p>
           </div>
           <div className="riwayat-actions">
-            <div className="riwayat-chip">
-              {itemCount} data - Terbaru lebih dulu
-            </div>
+            <div className="riwayat-chip">{itemCount} data - Terbaru lebih dulu</div>
             {canClear && (
               <button
                 type="button"
@@ -128,8 +172,10 @@ export default function RiwayatSection({
                 it.description ||
                 `Prediksi kategori ${it.risk_category || "tidak diketahui"} dengan skor ${display}.`;
               const idLabel = it.id ?? it.created_at ?? "-";
+              const itemKey = it.id || it.created_at || description;
+
               return (
-                <li key={it.id || it.created_at || description} className="riwayat-card">
+                <li key={itemKey} className="riwayat-card">
                   <span className="riwayat-card__dot" aria-hidden="true" />
                   <div className="riwayat-card__header">
                     <div>
@@ -157,6 +203,15 @@ export default function RiwayatSection({
                       </span>
                     </div>
                   </div>
+                  <div className="riwayat-card__footer">
+                    <button
+                      type="button"
+                      className="riwayat-toggle"
+                      onClick={() => openFeatures(it)}
+                    >
+                      Lihat gejala yang diinput
+                    </button>
+                  </div>
                 </li>
               );
             })}
@@ -168,6 +223,39 @@ export default function RiwayatSection({
           </div>
         )}
       </div>
+
+      {activeItem && (
+        <div className="riwayat-modal" role="dialog" aria-modal="true" aria-label="Detail gejala">
+          <div className="riwayat-modal__backdrop" onClick={closeFeatures} />
+          <div className="riwayat-modal__content">
+            <header className="riwayat-modal__header">
+              <div>
+                <p className="riwayat-modal__eyebrow">Diagnosis #{activeItem.id ?? "-"}</p>
+                <h3>{activeItem.risk_category || "Tidak diketahui"}</h3>
+                <p className="riwayat-modal__meta">{formatDate(activeItem.created_at)}</p>
+              </div>
+              <button className="riwayat-modal__close" onClick={closeFeatures} aria-label="Tutup">
+                ✕
+              </button>
+            </header>
+            <p className="riwayat-modal__subtitle">Gejala yang diinput</p>
+            <div className="riwayat-features">
+              {buildFeatureEntries(activeItem.features || {}).length ? (
+                <ul className="riwayat-feature-list">
+                  {buildFeatureEntries(activeItem.features || {}).map((feat) => (
+                    <li key={feat.key} className="riwayat-feature">
+                      <span className="riwayat-feature__name">{feat.label}</span>
+                      <span className="riwayat-feature__value">{feat.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="riwayat-feature__empty">Data gejala tidak tersedia.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

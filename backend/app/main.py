@@ -8,6 +8,8 @@ from app.routers.diagnosis import router as diagnosis_router
 from app.routers.gejala import router as gejala_router
 from app.routers.history import router as history_router
 from app.routers.auth import router as auth_router
+from app.routers.admin import router as admin_router
+from app.routers.expert import router as expert_router
 
 app = FastAPI(
     title="Sistem Diagnosis Awal Risiko Kanker Payudara",
@@ -46,3 +48,5 @@ app.include_router(diagnosis_router)
 app.include_router(gejala_router)
 app.include_router(history_router)
 app.include_router(auth_router)
+app.include_router(admin_router)
+app.include_router(expert_router)

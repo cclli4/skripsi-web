@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { parseJwt } from "@/lib/auth";
 
 const navItems = [
   { href: "#home", label: "Utama" },
@@ -19,9 +20,8 @@ function getStoredUser() {
     if (profileStr) return JSON.parse(profileStr);
     const token = localStorage.getItem("auth_token");
     if (token) {
-      const payloadPart = token.split(".")[1];
-      const payload = JSON.parse(atob(payloadPart));
-      return { email: payload.email };
+      const payload = parseJwt(token);
+      return { email: payload?.email, role: payload?.role, full_name: payload?.full_name };
     }
   } catch (e) {
     console.warn("Gagal memuat user dari storage", e);
@@ -33,6 +33,8 @@ export default function Nav() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const profileRef = useRef(null);
+  const isAdmin = user?.role === "admin";
+  const isExpert = user?.role === "expert";
 
   useEffect(() => {
     setUser(getStoredUser());
@@ -59,6 +61,8 @@ export default function Nav() {
 
   const avatarInitial = (user?.full_name || user?.email || "U").charAt(0).toUpperCase();
   const displayName = user?.full_name || user?.email || "Akun";
+  const roleLabel =
+    user?.role === "expert" ? "Pakar" : user?.role === "admin" ? "Admin" : user?.role ? "Pasien" : null;
 
   return (
     <nav className="primary-nav">
@@ -73,6 +77,18 @@ export default function Nav() {
         <div className="primary-nav__auth">
           {user ? (
             <div className="primary-nav__profile-wrap" ref={profileRef}>
+              <div className="primary-nav__links primary-nav__links--compact">
+                {isAdmin && (
+                  <Link href="/admin" className="primary-nav__link primary-nav__link--pill">
+                    Panel Admin
+                  </Link>
+                )}
+                {isExpert && (
+                  <Link href="/expert" className="primary-nav__link primary-nav__link--pill">
+                    Panel Pakar
+                  </Link>
+                )}
+              </div>
               <button
                 type="button"
                 className="primary-nav__profile"
@@ -80,13 +96,17 @@ export default function Nav() {
                 aria-expanded={menuOpen}
               >
                 <span className="primary-nav__avatar">{avatarInitial}</span>
-                <span className="primary-nav__name">{displayName}</span>
+                <span className="primary-nav__name">
+                  {displayName}
+                  {roleLabel && <span className="primary-nav__role">{roleLabel}</span>}
+                </span>
               </button>
               {menuOpen && (
                 <div className="primary-nav__menu">
                   <div className="primary-nav__menu-header">
                     <div className="primary-nav__menu-name">{displayName}</div>
                     {user?.email && <div className="primary-nav__menu-email">{user.email}</div>}
+                    {roleLabel && <div className="primary-nav__menu-role">{roleLabel}</div>}
                   </div>
                   <button type="button" className="primary-nav__menu-item" onClick={handleLogout}>
                     Keluar

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loginUser } from "@/lib/api";
+import { parseJwt } from "@/lib/auth";
 
 const benefits = [
   {
@@ -51,10 +52,17 @@ export default function LoginPage() {
         if (typeof window !== "undefined") {
           localStorage.setItem("auth_token", data.access_token);
           try {
-            const payloadPart = data.access_token.split(".")[1];
-            const payload = JSON.parse(atob(payloadPart));
-            const profile = { email: payload.email, full_name: payload.email };
+            const payload = parseJwt(data.access_token) || {};
+            const profile = {
+              email: payload.email || formValues.email,
+              full_name: payload.full_name || payload.email || formValues.email,
+              role: payload.role || data.role || "patient",
+            };
             localStorage.setItem("user_profile", JSON.stringify(profile));
+            const target =
+              profile.role === "admin" ? "/admin" : profile.role === "expert" ? "/expert" : "/";
+            router.push(target);
+            return;
           } catch (e) {
             console.warn("Gagal membaca payload token", e);
           }

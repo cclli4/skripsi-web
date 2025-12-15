@@ -99,7 +99,7 @@ export default function SinglePage() {
       setRiwayat([]);
     } catch (err) {
       console.error(err);
-      setHistoryError("Gagal menghapus riwayat. Pastikan backend berjalan dan mengizinkan permintaan.");
+      setHistoryError(err?.message || "Gagal menghapus riwayat. Pastikan backend berjalan dan mengizinkan permintaan.");
     } finally {
       setClearingHistory(false);
     }

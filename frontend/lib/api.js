@@ -19,10 +19,7 @@ export async function fetchHistory(token) {
     headers.Authorization = `Bearer ${authToken}`;
   }
   const res = await fetch(`${API_BASE}/history`, { method: "GET", headers });
-  if (!res.ok) {
-    throw new Error(`GET /history failed: ${res.status}`);
-  }
-  return res.json();
+  return handleJson(res, "GET /history");
 }
 
 export async function clearHistory() {
@@ -32,10 +29,7 @@ export async function clearHistory() {
     headers.Authorization = `Bearer ${authToken}`;
   }
   const res = await fetch(`${API_BASE}/history`, { method: "DELETE", headers });
-  if (!res.ok) {
-    throw new Error(`DELETE /history failed: ${res.status}`);
-  }
-  return res.json();
+  return handleJson(res, "DELETE /history");
 }
 
 async function handleJson(res, context) {
@@ -63,4 +57,41 @@ export async function loginUser(payload) {
     body: JSON.stringify(payload),
   });
   return handleJson(res, "POST /auth/login");
+}
+
+export async function fetchAdminOverview(token) {
+  const headers = { "Content-Type": "application/json" };
+  const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("auth_token") : "");
+  if (authToken) headers.Authorization = `Bearer ${authToken}`;
+  const res = await fetch(`${API_BASE}/admin/overview`, { method: "GET", headers });
+  return handleJson(res, "GET /admin/overview");
+}
+
+export async function fetchExpertCases(token) {
+  const headers = { "Content-Type": "application/json" };
+  const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("auth_token") : "");
+  if (authToken) headers.Authorization = `Bearer ${authToken}`;
+  const res = await fetch(`${API_BASE}/expert/cases`, { method: "GET", headers });
+  return handleJson(res, "GET /expert/cases");
+}
+
+export async function fetchExpertDiagnosis(token) {
+  const headers = { "Content-Type": "application/json" };
+  const authToken = token || (typeof window !== "undefined" ? localStorage.getItem("auth_token") : "");
+  if (authToken) headers.Authorization = `Bearer ${authToken}`;
+  const res = await fetch(`${API_BASE}/expert/diagnosis`, { method: "GET", headers });
+  return handleJson(res, "GET /expert/diagnosis");
+}
+
+export async function uploadExpertCasesCsv(file) {
+  const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
+  if (!token) throw new Error("Token tidak ada");
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${API_BASE}/expert/cases/upload`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: form,
+  });
+  return handleJson(res, "POST /expert/cases/upload");
 }

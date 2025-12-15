@@ -1,10 +1,12 @@
+import json
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.schemas.history import HistoryList, HistoryItem, HistoryClearResponse
 from app.models.diagnosis import Diagnosis
-from app.services.auth import get_current_user
+from app.services.auth import get_current_user, require_roles
 
 
 router = APIRouter(prefix="/history", tags=["history"])
@@ -12,6 +14,13 @@ router = APIRouter(prefix="/history", tags=["history"])
 
 @router.get("", response_model=HistoryList)
 def get_history(db: Session = Depends(get_db), _user=Depends(get_current_user)):
+    def parse_features(raw: str) -> dict:
+        try:
+            data = json.loads(raw or "{}")
+            return data if isinstance(data, dict) else {}
+        except Exception:
+            return {}
+
     rows = db.query(Diagnosis).order_by(Diagnosis.created_at.desc()).limit(50).all()
     items = [
         HistoryItem(
@@ -19,6 +28,7 @@ def get_history(db: Session = Depends(get_db), _user=Depends(get_current_user)):
             created_at=r.created_at,
             risk_value=r.risk_value,
             risk_category=r.risk_category,
+            features=parse_features(r.input_features_json),
         )
         for r in rows
     ]
@@ -26,7 +36,7 @@ def get_history(db: Session = Depends(get_db), _user=Depends(get_current_user)):
 
 
 @router.delete("", response_model=HistoryClearResponse)
-def clear_history(db: Session = Depends(get_db), _user=Depends(get_current_user)):
+def clear_history(db: Session = Depends(get_db), _user=Depends(require_roles("admin"))):
     deleted = db.query(Diagnosis).delete()
     db.commit()
     return HistoryClearResponse(deleted=deleted)
